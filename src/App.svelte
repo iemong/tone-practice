@@ -6,7 +6,9 @@
 
     const synth = new Tone.Synth().toDestination()
 
-    synth.triggerAttackRelease('C4', '8n')
+    const handlePlay = () => {
+        synth.triggerAttackRelease('C4', '8n')
+    }
 </script>
 
 <main>
@@ -19,6 +21,8 @@
         Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
         apps.
     </p>
+
+    <button on:click={handlePlay}>再生</button>
 
     <p>
         Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a>
