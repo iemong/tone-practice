@@ -1,7 +1,8 @@
 {
-  "semi": false,
-  "arrowParens": "avoid",
-  "singleQuote": true,
-  "tabWidth": 4,
-  "printWidth": 80
+    "semi": false,
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "tabWidth": 4,
+    "printWidth": 80,
+    "svelteSortOrder": "options-scripts-markup-styles"
 }
