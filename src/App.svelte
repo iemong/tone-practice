@@ -1,73 +1,27 @@
 <script lang="ts">
     import * as Tone from 'tone'
 
-    const synth = new Tone.Synth().toDestination()
-
-    const handlePlay = () => {
-        const now = Tone.now()
-        console.log(now)
-        synth.triggerAttackRelease('C4', '8n', now)
-        synth.triggerAttackRelease('E4', '8n', now + 0.5)
-        synth.triggerAttackRelease('G4', '8n', now + 1)
-    }
-
-    setInterval(() => console.log(Tone.now()), 1000)
-
-    let mediaRec: MediaRecorder | null = null
-    let chunks: BlobPart[] = []
-    let audioWrapper = null
+    const meter = new Tone.Meter()
+    const mic = new Tone.UserMedia().connect(meter)
 
     const handleInit = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-            })
-
-            mediaRec = new MediaRecorder(stream)
-            mediaRec.ondataavailable = e => {
-                chunks.push(e.data)
-            }
-            mediaRec.onstop = e => {
-                console.log('recorder stopped')
-                const audio = document.createElement('audio')
-                const blob = new Blob(chunks, {
-                    type: 'audio/ogg; codecs=opus',
-                })
-                chunks = []
-                audio.src = URL.createObjectURL(blob)
-                audio.setAttribute('controls', '')
-                audioWrapper.appendChild(audio)
-            }
+            await mic.open()
+            console.log('mic open')
+            const shifter = new Tone.PitchShift(5)
+            const reverb = new Tone.Freeverb(0.1)
+            const filter = new Tone.Filter(1000, 'lowpass').toDestination()
+            mic.connect(shifter)
+            shifter.connect(reverb)
+            reverb.connect(filter)
         } catch (e) {
-            console.error(e)
+            console.log('mic not open')
         }
-    }
-
-    let recordButtonColor = 'blue'
-
-    const handleRecord = () => {
-        mediaRec.start()
-        console.log(mediaRec.state)
-        console.log('recorder started')
-        recordButtonColor = 'red'
-    }
-
-    const handleStop = () => {
-        mediaRec.stop()
-        recordButtonColor = 'blue'
     }
 </script>
 
 <main>
-    <button on:click={handlePlay}>再生</button>
     <button on:click={handleInit}>初期化</button>
-    <button
-        class="record-btn"
-        on:click={handleRecord}
-        data-color={recordButtonColor}>録音</button
-    >
-    <button class="stop-btn" on:click={handleStop}>停止</button>
-    <div bind:this={audioWrapper} />
 </main>
 
 <style lang="scss">
